@@ -18,9 +18,9 @@ public class CartController {
     private final CartServcie cartServcie;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addCart(@Valid @RequestBody CartRequest request,Authentication authentication){
+    public ResponseEntity<Void> addCart(@Valid @RequestBody CartRequest request,Authentication authentication){
         cartServcie.addCart(request,authentication);
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/get")

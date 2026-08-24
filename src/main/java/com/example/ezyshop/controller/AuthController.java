@@ -29,5 +29,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/testt")
+    public ResponseEntity<String> logins(){
+        return ResponseEntity.ok("test");
+    }
+
 
 }

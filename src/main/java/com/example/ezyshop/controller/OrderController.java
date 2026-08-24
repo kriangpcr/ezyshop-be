@@ -3,6 +3,7 @@ package com.example.ezyshop.controller;
 import com.example.ezyshop.dto.order.OrderRequest;
 import com.example.ezyshop.dto.order.OrderResponse;
 import com.example.ezyshop.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,7 +25,7 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createOrder(@RequestBody OrderRequest request, Authentication authentication){
+    public ResponseEntity<Void> createOrder(@Valid @RequestBody OrderRequest request, Authentication authentication){
         orderService.createOrder(request,authentication);
         return ResponseEntity.noContent().build();
     }

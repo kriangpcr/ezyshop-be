@@ -3,8 +3,6 @@ on:
   push:
     branches: [ "main" ]
 
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -31,3 +29,17 @@ jobs:
 
       - name: Build and Test
         run: ./mvnw clean verify
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ezyshop:latest .
+
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/ezyshop:latest

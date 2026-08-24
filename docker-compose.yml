@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: zombie707za/ezyshop:latest
     container_name: ezyshop-app
     ports:
       - "8080:8080"

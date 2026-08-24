@@ -43,3 +43,14 @@ jobs:
       - name: Push Docker Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/ezyshop:latest
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ezyshop-be/
+            docker compose pull
+            docker compose up -d

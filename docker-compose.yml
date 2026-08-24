@@ -3,7 +3,7 @@ services:
     image: zombie707za/ezyshop:latest
     container_name: ezyshop-app
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     env_file:
       - .env
     restart: unless-stopped

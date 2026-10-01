@@ -30,9 +30,5 @@ public class ProductRequest {
     @NotNull
     private Category category;
 
-    @NotNull
-    @Min(0)
-    private Integer stock;
-
     private MultipartFile image;
 }

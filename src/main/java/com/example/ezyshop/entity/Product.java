@@ -34,22 +34,20 @@ public class Product {
     @Column(precision = 12, scale = 2)
     private BigDecimal price;
 
+    @Enumerated(EnumType.STRING)
     private Category category;
-
-    private int stock;
 
     private int sold;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_id", nullable = false)
-    private User seller;
-
     @CreationTimestamp
-    @Column(name = "createdAt", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "product")
+    private List<ProductItem> items = new ArrayList<>();;
 
 }

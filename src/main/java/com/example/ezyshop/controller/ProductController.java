@@ -1,8 +1,10 @@
 package com.example.ezyshop.controller;
 
+import com.example.ezyshop.dto.product.ProductItemRequest;
 import com.example.ezyshop.dto.product.ProductRequest;
 import com.example.ezyshop.dto.product.ProductResponse;
 import com.example.ezyshop.security.CustomUserDetails;
+import com.example.ezyshop.service.ProductItemService;
 import com.example.ezyshop.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ProductItemService productItemService;
 
     @PostMapping(path = "/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createProduct(
@@ -36,12 +39,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProduct(id));
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<Page<ProductResponse>> getAllProduct(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return ResponseEntity.ok(productService.getAllProduct(page, size));
+    @PostMapping(path = "items/create")
+    public ResponseEntity<String> createProductItems(
+            @Valid @RequestBody ProductItemRequest request,
+            Authentication authentication){
+        return ResponseEntity.ok(productItemService.createItems(request));
     }
+
+
 
 }

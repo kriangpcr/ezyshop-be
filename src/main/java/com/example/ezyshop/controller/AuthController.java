@@ -1,8 +1,6 @@
 package com.example.ezyshop.controller;
 
-import com.example.ezyshop.dto.auth.LoginRequest;
-import com.example.ezyshop.dto.auth.LoginResponse;
-import com.example.ezyshop.dto.auth.RegisterRequest;
+import com.example.ezyshop.dto.auth.*;
 import com.example.ezyshop.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request){
@@ -24,8 +25,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
-        LoginResponse response = new LoginResponse();
-        response.setToken(authService.login(request));
+        LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
     }
 
@@ -34,5 +34,12 @@ public class AuthController {
         return ResponseEntity.ok("test");
     }
 
-
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refresh(
+            @RequestBody RefreshTokenRequest request
+    ) {
+        return ResponseEntity.ok(
+                authService.refresh(request)
+        );
+    }
 }

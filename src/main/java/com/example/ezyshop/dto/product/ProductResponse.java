@@ -24,17 +24,9 @@ public class ProductResponse {
 
     private String category;
 
-    private String productImg;
-
     private String imgUrl;
 
-    private int stock;
-
     private int sold;
-
-    private String user_id;
-
-    private String sellerName;
 
     private LocalDateTime createdAt;
 

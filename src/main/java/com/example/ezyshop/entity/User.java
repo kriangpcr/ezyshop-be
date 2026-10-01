@@ -11,8 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Setter
@@ -37,19 +35,11 @@ public class User {
     private Role role;
 
     @CreationTimestamp
-    @Column(name = "createdAt", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updatedAt")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(
-            fetch = FetchType.LAZY,
-            mappedBy = "user",
-            cascade = CascadeType.ALL)
-    private List<UserAddress> addresses = new ArrayList<>();
-
-    @OneToOne
-    private Cart cart;
 }

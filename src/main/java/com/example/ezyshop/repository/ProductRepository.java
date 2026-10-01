@@ -12,10 +12,4 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product,String> {
 
-    @Query("""
-    SELECT DISTINCT p
-    FROM Product p
-    LEFT JOIN FETCH p.seller
-""")
-    Page<Product> findAllWithSellerAndImages(Pageable pageable);
 }

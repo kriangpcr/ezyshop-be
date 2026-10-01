@@ -1,7 +1,5 @@
 package com.example.ezyshop;
 
-import com.example.ezyshop.dto.order.OrderItemRequest;
-import com.example.ezyshop.dto.order.OrderRequest;
 import com.example.ezyshop.dto.product.ProductRequest;
 import com.example.ezyshop.dto.product.ProductResponse;
 import com.example.ezyshop.entity.*;

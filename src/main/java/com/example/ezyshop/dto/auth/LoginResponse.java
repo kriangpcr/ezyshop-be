@@ -1,5 +1,7 @@
 package com.example.ezyshop.dto.auth;
 
+import com.example.ezyshop.dto.user.UserResponse;
+import com.example.ezyshop.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,5 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class LoginResponse {
-    private String token;
+    private UserResponse user;
+    private String accessToken;
+    private String refreshToken;
 }

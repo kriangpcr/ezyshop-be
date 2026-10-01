@@ -1,17 +1,15 @@
-package com.example.ezyshop.dto.cart;
+package com.example.ezyshop.dto.product;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class CartRequest {
-
-    private int quantity;
-
+public class ProductItemRequest {
     private String product_id;
-
-    private String cart_id;
+    private List<String> data;
 }

@@ -28,18 +28,12 @@ public class ProductService {
             ProductRequest request,
             Authentication authentication
     ) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-        User seller = userRepository.findById(userDetails.getId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found"));
 
         String fileName = null;
         try {
             fileName = supabaseStorageService.upload(request.getImage());
 
             Product product = productMapper.toEntity(request);
-            product.setSeller(seller);
             product.setSold(0);
             product.setImgUrl(supabaseStorageService.getPublicUrl(fileName));
 
@@ -67,13 +61,4 @@ public class ProductService {
         return productMapper.toResponse(product);
     }
 
-    public Page<ProductResponse> getAllProduct(int page, int size) {
-
-        Page<Product> product =
-                productRepository.findAllWithSellerAndImages(
-                        PageRequest.of(page, size)
-                );
-
-        return product.map(product1 -> productMapper.toResponse(product1));
-    }
 }

@@ -37,7 +37,7 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private int sold;
+    private long sold;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

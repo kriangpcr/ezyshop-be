@@ -1,5 +1,7 @@
 package com.example.ezyshop.dto.product;
 
+import com.example.ezyshop.enums.Category;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProductResponse {
 
     private String id;
@@ -22,11 +25,13 @@ public class ProductResponse {
 
     private BigDecimal price;
 
-    private String category;
+    private Category category;
 
     private String imgUrl;
 
-    private int sold;
+    private long sold;
+
+    private long stock;
 
     private LocalDateTime createdAt;
 

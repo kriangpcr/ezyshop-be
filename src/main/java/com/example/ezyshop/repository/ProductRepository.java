@@ -1,5 +1,6 @@
 package com.example.ezyshop.repository;
 
+import com.example.ezyshop.dto.product.ProductResponse;
 import com.example.ezyshop.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,5 +12,22 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product,String> {
-
+    @Query("""
+    SELECT new com.example.ezyshop.dto.product.ProductResponse(
+        p.id,
+        p.title,
+        p.description,
+        p.price,
+        p.category,
+        p.imgUrl,
+        p.sold,
+         (SELECT COUNT(pi.id)
+                  FROM ProductItem pi
+                  WHERE pi.product = p),
+        p.createdAt,
+        p.updatedAt
+    )
+    FROM Product p
+""")
+    Page<ProductResponse> findAllWithStock(Pageable pageable);
 }

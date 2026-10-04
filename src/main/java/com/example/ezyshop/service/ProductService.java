@@ -12,6 +12,7 @@ import com.example.ezyshop.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,10 @@ public class ProductService {
         Product product = productRepository.findById(id).orElseThrow(()->
                 new ResourceNotFoundException("Product not found"));
         return productMapper.toResponse(product);
+    }
+
+    public Page<ProductResponse> getProducts(Pageable pageable) {
+        return productRepository.findAllWithStock(pageable);
     }
 
 }

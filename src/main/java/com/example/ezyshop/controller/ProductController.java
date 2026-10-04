@@ -9,6 +9,7 @@ import com.example.ezyshop.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +38,11 @@ public class ProductController {
             @PathVariable String id
     ){
         return ResponseEntity.ok(productService.getProduct(id));
+    }
+
+    @GetMapping(path = "/get")
+    public ResponseEntity<Page<ProductResponse>> getProducts(Pageable pageable) {
+        return ResponseEntity.ok(productService.getProducts(pageable));
     }
 
     @PostMapping(path = "items/create")

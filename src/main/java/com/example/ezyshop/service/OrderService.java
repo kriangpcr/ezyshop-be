@@ -2,12 +2,14 @@ package com.example.ezyshop.service;
 
 import com.example.ezyshop.dto.order.CreateOrderRequest;
 import com.example.ezyshop.dto.order.OrderItemResponse;
+import com.example.ezyshop.dto.order.OrderResponse;
 import com.example.ezyshop.entity.*;
 import com.example.ezyshop.enums.OrderStatus;
 import com.example.ezyshop.enums.ProductItemStatus;
 import com.example.ezyshop.exception.BadRequestException;
 import com.example.ezyshop.exception.ResourceNotFoundException;
 import com.example.ezyshop.repository.*;
+import com.example.ezyshop.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class OrderService {
     private final ProductItemRepository productItemRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
+    private final PaymentHistoryRepository paymentHistoryRepository;
 
     @Transactional
     public void createOrder(CreateOrderRequest request, Authentication authentication){
@@ -40,7 +43,7 @@ public class OrderService {
 
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow(()->
                 new ResourceNotFoundException("User not found"));
-
+        BigDecimal balanceBefore = user.getBalance();
         BigDecimal totalPrice = product.getPrice()
                 .multiply(BigDecimal.valueOf(request.getQuantity()));
         if (user.getBalance().compareTo(totalPrice) < 0){
@@ -64,26 +67,48 @@ public class OrderService {
             orderItem.setProductItem(productItem);
             orderItems.add(orderItem);
         }
+        BigDecimal balanceAfter =
+                balanceBefore.subtract(totalPrice);
+
+        PaymentHistory paymentHistory = new PaymentHistory();
+        paymentHistory.setBalanceBefore(balanceBefore);
+        paymentHistory.setAmount(totalPrice);
+        paymentHistory.setBalanceAfter(balanceAfter);
+        paymentHistory.setOrder(order);
+        paymentHistory.setUser(user);
+        paymentHistoryRepository.save(paymentHistory);
+
         product.setSold(product.getSold()+request.getQuantity());
-        user.setBalance(user.getBalance().subtract(totalPrice));
+        user.setBalance(balanceAfter);
         orderItemRepository.saveAll(orderItems);
     }
 
-    public List<OrderItemResponse> getOrders(Authentication authentication){
-        User user = userRepository.findByUsername(authentication.getName()).orElseThrow(()->
-                new ResourceNotFoundException("User not found"));
-        List<Order> orders = orderRepository.findAllByUserId(user.getId());
-        List<OrderItemResponse> responses = new ArrayList<>();
-        for (Order order : orders){
-            List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
-            for (OrderItem item : orderItems){
+    public List<OrderResponse> getOrders(Authentication authentication){
 
-                OrderItemResponse i = new OrderItemResponse();
-                i.setCategory(order.getProduct().getCategory());
-                i.setData(item.getProductItem().getData());
-                i.setTitle(order.getProduct().getTitle());
-                responses.add(i);
+        CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+        if (user == null){
+            throw new ResourceNotFoundException("User not found");
+        }
+        List<Order> orders = orderRepository.findAllByUserId(user.getId());
+
+        List<OrderResponse> responses = new ArrayList<>();
+        for (Order order : orders){
+            OrderResponse orderResponse = new OrderResponse();
+
+            orderResponse.setStatus(order.getStatus());
+            orderResponse.setCategory(order.getProduct().getCategory());
+            orderResponse.setQuantity(order.getQuantity());
+            orderResponse.setTitle(order.getProduct().getTitle());
+            orderResponse.setOrderId(order.getId());
+
+            List<OrderItemResponse> orderItems = new ArrayList<>();
+            for (OrderItem item: order.getOrderItems()){
+                OrderItemResponse orderItemResponse = new OrderItemResponse();
+                orderItemResponse.setData(item.getProductItem().getData());
+                orderItems.add(orderItemResponse);
             }
+            orderResponse.setItems(orderItems);
+            responses.add(orderResponse);
         }
         return responses;
     }

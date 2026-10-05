@@ -21,16 +21,6 @@ public class UserService {
 
         User user = userRepository.findByUsername(authentication.getName())  .orElseThrow(() ->
                 new ResourceNotFoundException("User not found"));
-
         return userMapper.toResponse(user);
-    }
-    public void addBalance(BigDecimal balance, Authentication authentication){
-
-        User user = userRepository.findByUsername(authentication.getName())  .orElseThrow(() ->
-                new ResourceNotFoundException("User not found"));
-
-        user.setBalance(balance);
-
-        userRepository.save(user);
     }
 }

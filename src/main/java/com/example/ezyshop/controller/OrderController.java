@@ -2,6 +2,7 @@ package com.example.ezyshop.controller;
 
 import com.example.ezyshop.dto.order.CreateOrderRequest;
 import com.example.ezyshop.dto.order.OrderItemResponse;
+import com.example.ezyshop.dto.order.OrderResponse;
 import com.example.ezyshop.dto.user.UserResponse;
 import com.example.ezyshop.entity.Order;
 import com.example.ezyshop.service.OrderService;
@@ -25,7 +26,7 @@ public class OrderController {
     }
 
     @GetMapping(path = "/get")
-    public ResponseEntity<List<OrderItemResponse>> getOrders(Authentication authentication){
+    public ResponseEntity<List<OrderResponse>> getOrders(Authentication authentication){
         return ResponseEntity.ok(orderService.getOrders(authentication));
     }
 

@@ -23,9 +23,4 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/addbalance/{balance}")
-    public ResponseEntity<Void> addBalance(@PathVariable BigDecimal balance, Authentication authentication){
-        userService.addBalance(balance,authentication);
-        return ResponseEntity.noContent().build();
-    }
 }

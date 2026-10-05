@@ -2,6 +2,7 @@ package com.example.ezyshop.config;
 
 import com.example.ezyshop.security.AuthEntryPointJwt;
 import com.example.ezyshop.security.JwtAuthenticationFilter;
+import com.example.ezyshop.security.JwtCookieFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthEntryPointJwt unauthorizedHandler;
+    private final JwtCookieFilter jwtCookieFilter;
 
     @Bean
     public SecurityFilterChain SecurityFilterChain (HttpSecurity http) throws Exception{
@@ -41,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/**").permitAll()
                         .requestMatchers("/product/get/**").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtCookieFilter,UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean

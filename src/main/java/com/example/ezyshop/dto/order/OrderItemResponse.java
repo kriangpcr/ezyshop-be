@@ -10,11 +10,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class OrderItemResponse {
-
-    private String title;
-
-    private Category category;
-
     private String data;
-
 }

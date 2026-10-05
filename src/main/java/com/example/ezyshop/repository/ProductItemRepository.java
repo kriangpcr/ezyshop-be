@@ -23,5 +23,6 @@ public interface ProductItemRepository extends JpaRepository<ProductItem,String>
     FROM ProductItem p
     WHERE p.product = :product AND p.status = 'AVAILABLE'
 """)
+
     long countByProductAndAvailable(@Param("product") Product product);
 }

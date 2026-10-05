@@ -10,4 +10,9 @@ public class RestClientConfig {
     public RestClient.Builder restClientBuilder() {
         return RestClient.builder();
     }
+
+    @Bean
+    public RestClient restClient(RestClient.Builder builder) {
+        return builder.build();
+    }
 }

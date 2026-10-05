@@ -1,6 +1,7 @@
 package com.example.ezyshop.service;
 
 import com.example.ezyshop.repository.StorageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -9,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class SupabaseStorageService implements StorageService {
     @Value("${supabase.url}")
     private String supabaseUrl;
@@ -20,10 +22,6 @@ public class SupabaseStorageService implements StorageService {
     private String bucket;
 
     private final RestClient restClient;
-
-    public SupabaseStorageService(RestClient.Builder builder) {
-        this.restClient = builder.build();
-    }
 
     @Override
     public String upload(MultipartFile file) {

@@ -9,7 +9,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Package the application (skip tests for faster build)
-RUN mvn clean package -DskipTests
+RUN mvn clean package -Dmaven.test.skip=true
 
 # ==========================================
 # Stage 2: Runtime Image (Lightweight JRE)

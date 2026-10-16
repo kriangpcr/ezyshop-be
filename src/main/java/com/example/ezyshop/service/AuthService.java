@@ -10,6 +10,7 @@ import com.example.ezyshop.repository.UserRepository;
 import com.example.ezyshop.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,7 +44,18 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException ex) {
+            throw new BadCredentialsException(
+                    "Invalid username or password"
+            );
+        }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
 
@@ -61,12 +73,14 @@ public class AuthService {
         return response;
     }
 
-    public RefreshTokenResponse refresh(RefreshTokenRequest request) {
-
-        String refreshToken = request.getRefreshToken();
+    public RefreshTokenResponse refresh(String refreshToken) {
 
         if (!jwtService.isRefreshToken(refreshToken)) {
             throw new BadRequestException("Invalid refresh token");
+        }
+
+        if (jwtService.isTokenExpired(refreshToken)) {
+            throw new BadRequestException("token is no longer use");
         }
         String username = jwtService.extractUsername(refreshToken);
 

@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +66,10 @@ public class ProductService {
 
     public Page<ProductResponse> getProducts(Pageable pageable) {
         return productRepository.findAllWithStock(pageable);
+    }
+
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAllProduct();
     }
 
 }

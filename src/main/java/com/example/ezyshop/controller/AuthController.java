@@ -2,13 +2,17 @@ package com.example.ezyshop.controller;
 
 import com.example.ezyshop.dto.auth.*;
 import com.example.ezyshop.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.WebUtils;
 
 import java.time.Duration;
 
@@ -29,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
+    public ResponseEntity<Void> login(
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response
     ){
@@ -63,21 +67,30 @@ public class AuthController {
                 refreshCookie.toString()
         );
 
-        return ResponseEntity.ok(loginResponse);
-    }
-
-    @GetMapping("/testt")
-    public ResponseEntity<String> logins(){
-        return ResponseEntity.ok("test");
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshTokenResponse> refresh(
-            @RequestBody RefreshTokenRequest request,
+    public ResponseEntity<Void> refresh(
+            HttpServletRequest request,
             HttpServletResponse response
     ) {
+        // อ่าน Refresh Token จาก Cookie
+        String refreshToken = WebUtils.getCookie(
+                request, "refresh_token"
+        ) != null
+                ? WebUtils.getCookie(request, "refresh_token").getValue()
+                : null;
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Refresh token is missing"
+            );
+        }
         RefreshTokenResponse refreshTokenResponse =
-                authService.refresh(request);
+                authService.refresh(refreshToken);
+
         ResponseCookie accessCookie = ResponseCookie
                 .from("access_token", refreshTokenResponse.getAccessToken())
                 .httpOnly(true)
@@ -107,6 +120,40 @@ public class AuthController {
                 refreshCookie.toString()
         );
 
-        return ResponseEntity.ok(refreshTokenResponse);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            HttpServletResponse response
+    ) {
+        ResponseCookie accessCookie = ResponseCookie
+                .from("access_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("None")
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie
+                .from("refresh_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("None")
+                .build();
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                accessCookie.toString()
+        );
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                refreshCookie.toString()
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }

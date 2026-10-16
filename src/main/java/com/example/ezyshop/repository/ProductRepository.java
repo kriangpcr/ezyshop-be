@@ -23,11 +23,32 @@ public interface ProductRepository extends JpaRepository<Product,String> {
         p.sold,
          (SELECT COUNT(pi.id)
                   FROM ProductItem pi
-                  WHERE pi.product = p),
+                  WHERE pi.product = p
+                  AND pi.status = com.example.ezyshop.enums.ProductItemStatus.AVAILABLE),
         p.createdAt,
         p.updatedAt
     )
     FROM Product p
 """)
     Page<ProductResponse> findAllWithStock(Pageable pageable);
+
+    @Query("""
+    SELECT new com.example.ezyshop.dto.product.ProductResponse(
+        p.id,
+        p.title,
+        p.description,
+        p.price,
+        p.category,
+        p.imgUrl,
+        p.sold,
+         (SELECT COUNT(pi.id)
+                  FROM ProductItem pi
+                  WHERE pi.product = p
+                  AND pi.status = com.example.ezyshop.enums.ProductItemStatus.AVAILABLE),
+        p.createdAt,
+        p.updatedAt
+    )
+    FROM Product p
+""")
+    List<ProductResponse> findAllProduct();
 }

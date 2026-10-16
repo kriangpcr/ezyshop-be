@@ -26,6 +26,7 @@ public class ProductController {
     private final ProductService productService;
     private final ProductItemService productItemService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(path = "/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createProduct(
             @Valid @ModelAttribute ProductRequest request,
@@ -45,7 +46,8 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProducts(pageable));
     }
 
-    @PostMapping(path = "items/create")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(path = "/items/create")
     public ResponseEntity<String> createProductItems(
             @Valid @RequestBody ProductItemRequest request,
             Authentication authentication){

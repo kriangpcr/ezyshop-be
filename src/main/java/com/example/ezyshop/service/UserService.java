@@ -8,6 +8,7 @@ import com.example.ezyshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 
@@ -21,6 +22,7 @@ public class UserService {
 
         User user = userRepository.findByUsername(authentication.getName())  .orElseThrow(() ->
                 new ResourceNotFoundException("User not found"));
+        System.out.println(user.getRole());
         return userMapper.toResponse(user);
     }
 }

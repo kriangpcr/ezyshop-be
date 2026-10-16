@@ -58,17 +58,21 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // อนุญาตทุก Origin
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        // อนุญาตเฉพาะ Frontend ของเรา
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:3000")
+        );
 
-        // อนุญาตทุก HTTP Method
-        configuration.setAllowedMethods(List.of("*"));
+        // อนุญาต HTTP Methods
+        configuration.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+        );
 
-        // อนุญาตทุก Header
+        // อนุญาต Request Headers
         configuration.setAllowedHeaders(List.of("*"));
 
-        // ถ้าไม่ได้ใช้ Cookie ไม่ต้องเปิด
-        configuration.setAllowCredentials(false);
+        // อนุญาตให้ส่ง Cookie
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();

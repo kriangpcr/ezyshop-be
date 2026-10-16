@@ -61,7 +61,7 @@ public class SecurityConfig {
 
         // อนุญาตเฉพาะ Frontend ของเรา
         configuration.setAllowedOrigins(
-                List.of("http://localhost:3000")
+                List.of("http://localhost:3000","https://ezyshop-fe.vercel.app/")
         );
 
         // อนุญาต HTTP Methods

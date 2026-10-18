@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.WebUtils;
@@ -74,7 +76,7 @@ public class AuthController {
     public ResponseEntity<Void> refresh(
             HttpServletRequest request,
             HttpServletResponse response
-    ) {
+    )  {
         // อ่าน Refresh Token จาก Cookie
         String refreshToken = WebUtils.getCookie(
                 request, "refresh_token"
@@ -83,8 +85,7 @@ public class AuthController {
                 : null;
 
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
+            throw new BadCredentialsException(
                     "Refresh token is missing"
             );
         }
@@ -122,6 +123,7 @@ public class AuthController {
 
         return ResponseEntity.noContent().build();
     }
+
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             HttpServletResponse response
@@ -139,7 +141,7 @@ public class AuthController {
                 .from("refresh_token", "")
                 .httpOnly(true)
                 .secure(true)
-                .path("/")
+                .path("/auth")
                 .maxAge(0)
                 .sameSite("None")
                 .build();

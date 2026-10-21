@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User,String> {
 
     public Optional<User> findByUsername(String username);
 
+    public Optional<User> findByEmail(String email);
+
     public boolean existsByUsername(String username);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

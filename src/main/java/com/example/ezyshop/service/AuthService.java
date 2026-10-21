@@ -2,6 +2,7 @@ package com.example.ezyshop.service;
 
 import com.example.ezyshop.dto.auth.*;
 import com.example.ezyshop.entity.User;
+import com.example.ezyshop.enums.AuthProvider;
 import com.example.ezyshop.enums.Role;
 import com.example.ezyshop.exception.BadRequestException;
 import com.example.ezyshop.mapper.ProductMapper;
@@ -16,9 +17,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -97,6 +101,34 @@ public class AuthService {
 
         response.setAccessToken(accessToken);
         response.setRefreshToken(newRefreshToken);
+        return response;
+    }
+
+    public LoginResponse LoginRegisterByGoogleOAuth(OAuth2AuthenticationToken auth2AuthenticationToken){
+        OAuth2User oAuth2User = auth2AuthenticationToken.getPrincipal();
+        String email = oAuth2User.getAttribute("email");
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            user = new User();
+            user.setEmail(email);
+            user.setBalance(new BigDecimal(0));
+            user.setRole(Role.USER);
+            user.setAuthProvide(AuthProvider.GOOGLE);
+            user.setUsername("google_"+ UUID.randomUUID()
+                    .toString()
+                    .replace("-", ""));
+            userRepository.save(user);
+        }
+        String username = user.getUsername();
+
+        String accessToken  = jwtService.generateToken(username);
+        String refreshToken  = jwtService.generateRefreshToken(username);
+
+        LoginResponse response = new LoginResponse();
+
+        response.setUser(userMapper.toResponse(user));
+        response.setAccessToken(accessToken);
+        response.setRefreshToken(refreshToken);
         return response;
     }
 }

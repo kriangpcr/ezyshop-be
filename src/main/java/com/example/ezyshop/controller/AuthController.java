@@ -1,6 +1,7 @@
 package com.example.ezyshop.controller;
 
 import com.example.ezyshop.dto.auth.*;
+import com.example.ezyshop.entity.User;
 import com.example.ezyshop.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,10 +13,13 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.WebUtils;
 
+import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 
 @RestController
@@ -146,6 +150,15 @@ public class AuthController {
                 .sameSite("None")
                 .build();
 
+        ResponseCookie jsessionid = ResponseCookie
+                .from("JSESSIONID", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("None")
+                .build();
+
         response.addHeader(
                 HttpHeaders.SET_COOKIE,
                 accessCookie.toString()
@@ -155,7 +168,56 @@ public class AuthController {
                 HttpHeaders.SET_COOKIE,
                 refreshCookie.toString()
         );
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                jsessionid.toString()
+        );
 
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/login/google")
+    public ResponseEntity<Void> loginGoogle(
+            HttpServletResponse response
+    ) throws IOException {
+        response.sendRedirect("/oauth2/authorization/google");
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/loginSuccess")
+    public void handleGoogleSuccess(OAuth2AuthenticationToken oAuth2AuthenticationToken, HttpServletResponse response) throws IOException {
+        String frontendUrl = "http://localhost:3000";
+        LoginResponse loginResponse = authService.LoginRegisterByGoogleOAuth(oAuth2AuthenticationToken);
+        ResponseCookie accessCookie = ResponseCookie
+                .from("access_token", loginResponse.getAccessToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(Duration.ofMinutes(15))
+                .build();
+
+        // Refresh Token
+        ResponseCookie refreshCookie = ResponseCookie
+                .from("refresh_token", loginResponse.getRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/auth")
+                .maxAge(Duration.ofDays(7))
+                .build();
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                accessCookie.toString()
+        );
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                refreshCookie.toString()
+        );
+        response.sendRedirect(frontendUrl);
+    }
+
 }

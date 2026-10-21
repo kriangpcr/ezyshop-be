@@ -1,3 +1,4 @@
+
 package com.example.ezyshop.security;
 
 import jakarta.servlet.FilterChain;
@@ -17,10 +18,9 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtCookieFilter  extends OncePerRequestFilter {
+public class JwtCookieFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
     private final CustomDetailUserService userDetailsService;
 
     @Override
@@ -29,31 +29,27 @@ public class JwtCookieFilter  extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
         String token = null;
+
         if (request.getCookies() != null) {
-
             for (Cookie cookie : request.getCookies()) {
-
                 if ("access_token".equals(cookie.getName())) {
                     token = cookie.getValue();
                     break;
                 }
             }
-
         }
-        if (token != null && jwtService.isAccessToken(token)) {
 
+        if (token != null && jwtService.isAccessToken(token)) {
             String username = jwtService.extractUsername(token);
-            if (username != null
-                    && SecurityContextHolder
-                    .getContext()
-                    .getAuthentication() == null) {
+
+            if (username != null) {
                 try {
                     UserDetails userDetails =
                             userDetailsService.loadUserByUsername(username);
 
                     if (jwtService.isTokenValid(token, userDetails)) {
-
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(
                                         userDetails,
@@ -61,19 +57,16 @@ public class JwtCookieFilter  extends OncePerRequestFilter {
                                         userDetails.getAuthorities()
                                 );
 
-                        SecurityContextHolder
-                                .getContext()
+                        // ใช้ Authentication จาก JWT แทน Google Session
+                        SecurityContextHolder.getContext()
                                 .setAuthentication(authentication);
                     }
-
                 } catch (UsernameNotFoundException e) {
-                    throw new UsernameNotFoundException("User not found");
+                    SecurityContextHolder.clearContext();
                 }
             }
         }
 
         filterChain.doFilter(request, response);
     }
-
-
 }

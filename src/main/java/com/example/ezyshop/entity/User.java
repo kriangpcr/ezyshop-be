@@ -1,5 +1,6 @@
 package com.example.ezyshop.entity;
 
+import com.example.ezyshop.enums.AuthProvider;
 import com.example.ezyshop.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,10 +27,18 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = true, unique = true)
+    private String email;
+
+    @Column(nullable = true)
     private String password;
 
-    private BigDecimal balance;
+    @Column(nullable = false)
+    private BigDecimal balance = BigDecimal.ZERO;
+
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvide;
 
     @Enumerated(EnumType.STRING)
     private Role role;

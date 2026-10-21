@@ -22,7 +22,6 @@ public class UserService {
 
         User user = userRepository.findByUsername(authentication.getName())  .orElseThrow(() ->
                 new ResourceNotFoundException("User not found"));
-        System.out.println(user.getRole());
         return userMapper.toResponse(user);
     }
 }

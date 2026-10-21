@@ -44,6 +44,9 @@ public class SecurityConfig {
                         .requestMatchers("/product/get/**").permitAll()
                         .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated())
+                .oauth2Login(oauth2 -> oauth2
+                        .defaultSuccessUrl("/auth/loginSuccess", true)
+                        .failureUrl("/loginFailure"))
                 .addFilterBefore(jwtCookieFilter,UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

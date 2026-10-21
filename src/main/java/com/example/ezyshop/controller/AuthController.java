@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -27,6 +28,9 @@ import java.time.Duration;
 public class AuthController {
 
     private final AuthService authService;
+
+    @Value("${frontend.url}")
+    private String frontendURL;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -187,7 +191,6 @@ public class AuthController {
 
     @GetMapping("/loginSuccess")
     public void handleGoogleSuccess(OAuth2AuthenticationToken oAuth2AuthenticationToken, HttpServletResponse response) throws IOException {
-        String frontendUrl = "http://localhost:3000";
         LoginResponse loginResponse = authService.LoginRegisterByGoogleOAuth(oAuth2AuthenticationToken);
         ResponseCookie accessCookie = ResponseCookie
                 .from("access_token", loginResponse.getAccessToken())
@@ -217,7 +220,7 @@ public class AuthController {
                 HttpHeaders.SET_COOKIE,
                 refreshCookie.toString()
         );
-        response.sendRedirect(frontendUrl);
+        response.sendRedirect(frontendURL);
     }
 
 }
